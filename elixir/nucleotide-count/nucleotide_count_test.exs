@@ -4,6 +4,7 @@ end
 
 ExUnit.start()
 # ExUnit.configure(exclude: :pending, trace: true)
+ExUnit.configure(trace: true)
 
 defmodule NucleotideCountTest do
   use ExUnit.Case

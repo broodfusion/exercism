@@ -9,22 +9,20 @@ defmodule ProteinTranslation do
       |> Stream.chunk_every(3)
       |> Stream.map(fn x -> Enum.join(x) end)
 
-    case invalid?(list) do
-      true ->
-        {:error, "invalid RNA"}
+    if invalid?(list) do
+      {:error, "invalid RNA"}
+    else
+      strand =
+        list
+        |> Enum.reduce_while([], fn x, acc ->
+          case of_codon(x) do
+            {:ok, "STOP"} -> {:halt, acc}
+            {:ok, protein} -> {:cont, [protein | acc]}
+          end
+        end)
+        |> Enum.reverse()
 
-      false ->
-        strand =
-          list
-          |> Enum.reduce_while([], fn x, acc ->
-            case of_codon(x) do
-              {:ok, "STOP"} -> {:halt, acc}
-              {:ok, protein} -> {:cont, [protein | acc]}
-            end
-          end)
-          |> Enum.reverse()
-
-        {:ok, strand}
+      {:ok, strand}
     end
   end
 
